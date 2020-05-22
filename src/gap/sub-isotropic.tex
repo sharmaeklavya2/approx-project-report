@@ -4,23 +4,24 @@ We proceed using Strategy-2 as discussed in (\ref{sec:it-str-2}).
 We exhibit a subset of constraints $W^{(k)}$ at each iteration $k$ of our rounding such that
 $\dim(W^{(k)}) < (1-\delta)n_k$, where $n_k$ is the number of fractional variables
 and the constraints not in $W^{(k)}$ will be shown to be satisfied
-within an additive error of $\frac{T_i}{1-2\delta}$ where $\delta \in [0,1/2)$
+within an additive error of $\frac{q_i}{1-2\delta}$ where $\delta \in [0,1/2)$
 is an input parameter called the slack.
-Notice that setting $\delta = 0$ gives us the conventional $2T_i$ approximation result.
+Notice that setting $\delta = 0$ is equivalent to using iterative rounding,
+giving us the conventional $T_i + q_i$ approximation result.
 
 Denote fractionally assigned jobs by $R_k$ and let $r_k = \abs{R_k}$.
 For machine $i$, define the excess $e_i$ as
 \[ e_i = \sum_{j \in \delta(i) \cap R_k} (1 - x_{i,j}^{(k)}) \]
 Machine $i$ will get the maximum load that it can possibly get if
 all fractional variables get rounded to 1. So, the maximum increase in $i$'s load is
-\[ \sum_{j \in \delta(i) \cap R_k} p_{i,j} (1-x_{i,j}^{(k)}) \leq T_i e_i \]
-Denote machines with high excess ($e_i > T_i/(1-2\delta)$) by $M_k$ and let $m_k = \abs{M_k}$.
+\[ \sum_{j \in \delta(i) \cap R_k} p_{i,j} (1-x_{i,j}^{(k)}) \leq q_i e_i \]
+Denote machines with high excess ($e_i > q_i/(1-2\delta)$) by $M_k$ and let $m_k = \abs{M_k}$.
 Constraints corresponding to $M_k \cup R_k$ form our $W^{(k)}$. We first show that,
 \begin{lemma}
 $\dim(W^{(k)}) < (1-\delta)n_k$
 \end{lemma}
 \begin{proof}
-If $i \not\in M_k$, max increase in load is at most $T_i e_i \le \frac{T_i}{1-2\delta}$.
+If $i \not\in M_k$, max increase in load is at most $q_i e_i \le \frac{q_i}{1-2\delta}$.
 \[ \sum_{i \in M_k} e_i > \frac{m_k}{1-2\delta} \]
 \begin{align*}
 \sum_{i \in M_k} e_i
@@ -36,20 +37,20 @@ Since each job $j \in R_k$ is fractionally assigned to at least 2 machines, $n_k
 \end{proof}
 
 %Note that the excess of a machine may increase over time, but if it was ever lower than
-%$1/(1-2\delta)$, then its load is guaranteed to be less than $T_i\left(1 + 1/(1-2\delta)\right)$.
+%$1/(1-2\delta)$, then its load is guaranteed to be less than $T_i + q_i/(1-2\delta)$.
 
 \begin{theorem}
 For any $\delta \in [0,1/2)$, and a starting fractional solution $x^*$,
 using sub-isotropic rounding we get an integral solution $X$ such that
 \begin{itemize}
-    \item maximum increase in load on a machine is $\leq \frac{T_i}{1-2\delta}$.
+    \item maximum increase in load on a machine is $\leq \frac{q_i}{1-2\delta}$.
     \item $\E[X] = x^*$.
     \item $X$ is $O(1/\delta)$-concentrated around $x^*$.
 \end{itemize}
 \end{theorem}
 \begin{proof}
 We drop the constraints not in $W^{(k)}$ and those constraints are
-additively violated by at most $T_i/(1-2\delta)$
+additively violated by at most $q_i/(1-2\delta)$
 (this corresponds to the `relaxation' trick of iterative rounding).
 We proved that $\dim(W^{(k)}) < (1-\delta)n_k$. Therefore, we can invoke sub-isotropic rounding.
 %In each iteration $k$, sub-isotropic rounding will give us a $y^{(k)}$ in the nullspace of $W^{(k)}$.
