@@ -1,0 +1,40 @@
+\subsection{Fairness}
+
+There is a variant of GAP that aims to incorporate fairness:
+each job belongs to some category and we want the load due to each category
+on each machine to be lower and upper bounded.
+
+Formally, let $C_k \subseteq J$ be the $k\Th$ category.
+We wish to solve this LP:
+\[ \begin{array}{*3{>{\displaystyle}l}}
+\min_x & \sum_{e \in E}{c_e}{x_e} &
+\\ \\ \textrm{where} & \sum_{i \in \delta(j)} x_{i,j} = 1 & \quad \forall j \in J
+\quad \textrm{(each job is scheduled)}
+\\ \\ & \sum_{j \in \delta(i)} p_{i,j} x_{i,j} \le T_i & \quad \forall i \in M
+\quad \textrm{(load is at most the availability)}
+\\ \\ & \sum_{j \in \delta(i) \cap C_k} p_{i,j} x_{i,j} \in [\alpha T_i, \beta T_i]
+& \quad \forall i \in M, \; \forall k \in K \quad \textrm{(fairness constraints)}
+\\ \\ & x_e \ge 0 & \quad \forall e \in E
+\end{array} \]
+Let $x^*$ be an optimal solution to this LP.
+
+We'll try solving this using sub-isotropic rounding.
+Here we'll treat the fairness constraints as soft constraints.
+The integral solution $X$ will satisfy all guarantees of iterative rounding,
+i.e. it gives a valid assignment of jobs to machines such that the
+load on machine $i$ is at most $T_i + q_i/(1-2\delta)$.
+
+Sub-isotropic rounding ensures that all fairness constraints are satisfied in expectation.
+It also ensures that $X$ is $20/\delta$-Bernstein-concentrated,
+so for the $k\Th$ constraint (using a variant of Bernstein's inequality
+(lemma \ref{thm:my-bern})), we get
+\[ \Pr\left[ \begin{array}{cc}\textrm{load on machine } i
+\\ \textrm{due to category } C_k \end{array} \ge (1+\epsilon)\beta T_i \right]
+\le \exp\left( \frac{-\delta}{40} \frac{T_i}{q_i}
+\frac{\beta\epsilon^2}{1+\frac{\epsilon}{3}} \right) \]
+\[ \Pr\left[ \begin{array}{cc}\textrm{load on machine } i
+\\ \textrm{due to category } C_k \end{array} \le (1-\epsilon)\alpha T_i \right]
+\le \exp\left( \frac{-\delta}{40} \frac{T_i}{q_i}
+\frac{\alpha\epsilon^2}{1+\frac{\epsilon}{3}} \right) \]
+This means that if $q_i \ll T_i$, then all fairness constraints
+are satisfied with high probability.
