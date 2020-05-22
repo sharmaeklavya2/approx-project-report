@@ -1,0 +1,25 @@
+\subsection{Randomized rounding}
+
+Directly using randomized rounding with GAP is cumbersome, since the constraint
+\[ \sum_{i \in \delta(j)} x_{i,j} = 1 \quad \forall j \in J \]
+need not be satisfied. As a result, some jobs may not be scheduled
+and some jobs will be scheduled on multiple machines.
+
+We'll use a variant of randomized rounding which is strictly better than randomized rounding:
+instead of rounding each $x_e$ independently, we'll assign each job independently.
+For job $j$, we'll assign it to machine $i$ with probability $x_{i,j}$.
+So if $X$ is the rounded solution, then $[X_{i,j}: i \in \delta(j)]$
+follows the Multinoulli distribution with $\Pr(X_{i,j} = 1) = x_{i,j}^*$.
+Since $\sum_{i \in \delta(j)} x_{i,j}^* = 1$, this is possible and each job
+will be assigned to a single machine.
+\[ \textrm{Expected load on machine } i
+= \E\left(\sum_{j \in \delta(i)} p_{i,j}X_{i,j}\right)
+= \sum_{j \in \delta(i)} p_{i,j}x_{i,j}^*
+\le T_i \]
+
+In the linear term $\sum_{j \in \delta(i)} p_{i,j}X_{i,j}$,
+the variables correspond to different jobs, so they are independent.
+Therefore, we can use Bernstein's inequality to prove concentration.
+\[ \Pr[\textrm{load on machine } i \ge 2T_i]
+\le e^{-\frac{3}{8}} \le 0.6873 \]
+This is poor concentration.
