@@ -1,0 +1,120 @@
+\subsection{Iterative rounding}
+
+We'll only consider problems whose LP relaxations are of this form:
+\[ \min_{x \in \mathbb{R}^n} c^Tx \textrm{ where } Ax \le b \wedge 0 \le x \le 1 \]
+
+Iterative rounding is a deterministic rounding algorithm
+where in each iteration, we round one or more variables to 0 or 1.
+
+We first obtain an optimal solution $x^*$ to the LP. Let $x^{(0)} = x^*$.
+Then there are several iterations.
+In iteration $i$, we modify $x^{(i-1)}$ according to certain rules to obtain $x^{(i)}$.
+Call this modification algorithm $\iterround$, i.e. $x^{(i)} = \iterround(x^{(i-1)})$.
+Unlike $\randround$, the design of $\iterround$ may rely on the structure of the problem.
+
+$\iterround$ must follows these 3 rules:
+\begin{itemize}
+\item $\iterround(x)$ should be feasible for the LP.
+\item values of integer-valued variables remain the same, i.e.
+\[ x^{(i)}_j \in \{0, 1\} \implies x^{(i+1)}_j = x^{(i)}_j \]
+\item the number of integer-valued variables increases by at least 1.
+\end{itemize}
+Therefore, in at most $n$ iterations, we obtain an integral solution $X$.
+
+Ideally, we'll want $c^Tx^{(i)}$ to decrease in each iteration,
+i.e. design $\iterround$ so that it satisfies this property: $c^T\iterround(x) \le c^Tx$.
+It may be difficult to do so, and it is impossible if the integrality gap is not 1.
+To make it easier to design such an $\iterround$,
+we apply one (or both) of these tricks before invoking $\iterround$:
+\begin{itemize}
+\item \textbf{Relaxation}:
+We relax a carefully-chosen set of constraints,
+i.e. change $(Ax)_i \le b_i$ to $(Ax)_i \le (1+\epsilon)b_i$.
+We also ensure that a constraint is never relaxed twice.
+This means that when the algorithm ends, all constraints are approximately satisfied.
+Usually we drop a constraint altogether if we can prove that
+dropping it won't violate it too much.
+\item \textbf{Rounding}:
+We round variables with values above a certain threshold to 1,
+i.e. set $x_j$ to 1 if $x_j \ge \alpha$, such that the resulting LP is still feasible.
+If we can ensure that $c^T\iterround(x) \le c^Tx$ when each fractional variable
+is less than $\alpha$, then when the algorithm ends,
+the objective value is at most $1/\alpha$ times the optimal.
+\end{itemize}
+We will ignore rounding in this document; we'll only consider relaxation.
+
+We now look at 2 common strategies for designing $\iterround$.
+
+\subsubsection{Strategy 1: obtaining extreme-point solution to residual LP}
+
+Treat integral variables as constants to get a new LP, called the residual LP,
+and obtain an optimal extreme-point solution to it.
+This will give us a feasible solution to the old LP with the same or better
+objective value and whose integral variables have the same value as before.
+The only task that remains is to prove that the number of integral variables increases.
+This is done by using the rank lemma on the residual LP.
+The proof is problem-specific and relies on the structure of the problem.
+
+\begin{theorem}[Rank lemma]
+Given an optimal extreme point solution,
+the maximum number of linearly independent tight constraints
+equals the number of variables.
+\end{theorem}
+
+\subsubsection{Strategy 2: finding constraints of low dimensionality}
+\label{sec:it-str-2}
+
+\begin{definition}
+Let $Ax \le b$ be the constraints in an LP other than the $0 \le x \le 1$ constraints,
+where $A$ is an $m$ by $n$ matrix. Let $R \subseteq [n]$.
+Let $w_i$ be the vector of coefficients of $R$ in the $i^{\textrm{th}}$ constraint,
+i.e. $w_i = [A[i, j]: j \in R]$. Let $W = \{w_i: 1 \le i \le m\}$.
+Then $W$ is called the alive component of the constraint matrix
+$A$ with respect to $R$ and is denoted as $A[R]$.
+\end{definition}
+
+The strategy for designing $\iterround$ is as follows:
+Carefully choose a subset $R$ of fractional variables
+(usually $R$ is the set of all the fractional variables).
+Let $W = A[R]$. Then we prove that $\dim(W) < \abs{R}$.
+Choosing $R$ and proving $\dim(W) < \abs{R}$ is problem-specific
+and relies on the structure of the problem.
+
+$\dim(W) < \abs{R}$ means that the nullspace of $W$ has positive dimension,
+so there is a non-zero vector $z \in \mathbb{R}^{\abs{R}}$ such that $Wz = 0$.
+Define $y \in \mathbb{R}^n$ as
+\[ y_j = \begin{cases} z_j & \textrm{if } j \in R
+\\ 0 & \textrm{if } j \not\in R \end{cases} \]
+If $c^Ty > 0$, replace $z$ by $-z$ and $y$ by $-y$.
+
+Let $x^{(i+1)} = x^{(i)} + \gamma y$, where
+$\gamma$ is the maximum value such that $0 \le x^{(i+1)} \le 1$.
+Since $0 \le x^{(i)} \le 1$ and all variables in $R$ are fractional, $\gamma > 0$.
+\begin{itemize}
+\item Given how we choose $\gamma$, $0 \le x^{(i+1)} \le 1$.
+$Wz = 0 \implies Ay = 0 \implies Ax^{(i+1)} = Ax^{(i)} \le b$.
+Therefore, $x^{(i+1)}$ is feasible for the LP.
+\item Since $R$ only contains fractional variables,
+the values of integral variables don't change.
+\item Since we're choosing $\gamma$ to be the maximum possible,
+$\exists j \in R, x^{(i+1)}_j \in \{0, 1\}$.
+This means that the number of integral variables increases.
+\item $\gamma > 0$ and $c^Ty \le 0$ implies that the objective value does not increase.
+\end{itemize}
+
+The above properties are exactly what we need for successfully applying iterative rounding.
+
+When $\dim(W) = \abs{R}-1$, then there is a unique (up to scaling) non-zero $z$
+that satisfies $Wz = 0$. However, if $\dim(W)$ is even smaller,
+then we have more freedom on how to choose $z$.
+It may be possible to choose $z$ intelligently so that the final integral solution
+satisfies additional desirable properties.
+In fact, this is the basis of sub-isotropic rounding.
+
+\subsubsection{What is it good for?}
+
+Iterative rounding is useful in scenarios where there are `hard constraints' in the LP,
+i.e. whose violation cannot be tolerated.
+For example, for the maximum-weight bipartite matching problem,
+the constraints ensure that the solution is a matching.
+For this problem, a solution that is not a matching is unacceptable.

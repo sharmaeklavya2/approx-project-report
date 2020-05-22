@@ -1,0 +1,217 @@
+\section{Sub-isotropic rounding}
+
+Iterative rounding allows us to satisfy constraints exactly
+(almost exactly if we use relaxation) and randomized rounding allows us to
+satisfy constraints in expectation and with concentration.
+Sub-isotropic rounding is a rounding algorithm by Nikhil Bansal
+which combines the advantages of both iterative rounding and randomized rounding:
+we can satisfy hard constraints exactly and satisfy soft constraints
+in expectation and with concentration.
+
+We'll now formally describe what we mean by `with concentration'.
+\begin{definition} [Bernstein's inequality with $\beta$-concentration]
+For $\beta \geq 1$, a random vector $X \in \{0, 1\}^n$ with mean $x$
+satisfies Bernstein's inequality with $\beta$-concentration
+iff $\forall a \in \mathbb{R}^n$
+\[ Pr[a^T X - \E[a^T X] \ge t] \leq \exp\left(-\frac{t^2/\beta}{
+2\left(\sum_i a_i^2(x_i - x_i^2) + \norm{a}_{\infty}t/3\right)}\right) \]
+Replacing $X$ by $1-X$ tells us about the lower tail.
+\end{definition}
+Sub-isotropic rounding takes a parameter $\delta$ as input.
+The output $X$ is $O(1/\delta)$-concentrated.
+
+Sub-isotropic rounding works in a way very similar to
+Strategy 2 (section \ref{sec:it-str-2}) of iterative rounding.
+It provides us with an $\iterround$ subroutine
+that fits cleanly into the iterative rounding framework.
+It is different from iterative rounding in these ways:
+\begin{itemize}
+\item The number of integral variables will not necessarily increase in every iteration.
+We'll need a separate argument to prove that the algorithm terminates.
+\item The LP objective value need not improve in every iteration,
+but the expected objective value will remain the same.
+\end{itemize}
+
+Let $R$ be the set of fractional variables. Let $W = A[R]$.
+Then we prove that $\dim(W) < (1-\delta)\abs{R}$.
+Proving $\dim(W) < (1-\delta)\abs{R}$ is problem-specific
+and relies on the structure of the problem.
+
+As per strategy 2, we need to choose a vector $z$ from the nullspace of $W$.
+The nullspace has dimension greater than $\delta\abs{R}$,
+so we have considerable freedom in choosing $z$.
+We want to choose $z$ in a way so that we get concentration.
+
+Here we borrow ideas from randomized rounding,
+because randomized rounding gives us $\beta$-concentration with $\beta = 1$.
+We view randomized rounding as an iterative algorithm as follows:
+We start with a fractional solution $x^{(0)} = x^*$ and do an independent random walk
+on each coordinate ($x_i^{(k)} = x_i^{(k-1)} + \gamma$)
+where the step-size $\gamma$ is infinitesimally small.
+When this random walk in $[0,1]^n$ hits a face (one of the $x_i$ turns 0 or 1)
+it stays on that face and we continue walking till we hit a vertex $X \in \{0, 1\}^n$.
+These sequence of updates form a martingale sequence and by martingale property
+we have that $\Pr(X_i = 1) = \E(X_i) = x_i^*$.
+
+Inspired by the above idea, we'll try to do something like a random walk in the
+nullspace of $A$, i.e. $A(x^{(i+1)} - x^{(i)}) = 0$.
+Hopefully that will inject enough randomness to give us concentration.
+
+\begin{definition}[$(a, \eta)$-sub-isotropic matrix]
+For $0 < a \le 1$ and $\eta \ge 1$, an $m$-by-$m$ matrix $U$ is $(a, \eta)$-sub-isotropic
+iff all of these conditions hold:
+\begin{itemize}
+\item $U$ is symmetric and positive semi-definite.
+\item $\forall i \le m, U[i, i] \le 1$.
+\item $\trace(U) \ge am$.  % needed to ensure energy increase so that algo terminates
+\item $U \preceq \eta \diag(U)$.  % used to prove prerequisite of lemma 2.2 in opaper.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[$(a, \eta)$-sub-isotropic random variable]
+A random variable $Y \in \mathbb{R}^m$ is $(a, \eta)$-sub-isotropic iff
+$\E(Y) = 0$ and $\E(YY^T)$ is a $(a, \eta)$-sub-isotropic matrix.
+\end{definition}
+If all coordinates of $Y$ are mutually independent with $\E(Y) = 0$ and $\Var(Y) = 1$,
+then $Y$ is $(1, 1)$-sub-isotropic.
+Sub-isotropicness can be interpreted as a weaker form of independence.
+
+\begin{theorem}
+Let $U$ be an $m$-by-$m$ $(a, \eta)$-sub-isotropic matrix.
+Let $r \in_R \{-1, 1\}^m$ be a random vector
+(i.e. each coordinate of $r$ is chosen independently
+and randomly from $\{-1, 1\}$ with equal probability).
+Then $Y = \sqrt{U}r$ is a $(a, \eta)$-sub-isotropic random variable.
+\end{theorem}
+\begin{proof}
+\[ \E(Y) = \E(\sqrt{U}r) = \sqrt{U}\E(r) = 0 \]
+\[ \E(YY^T) = \E(\sqrt{U}rr^T\sqrt{U}) = \sqrt{U}\E(rr^T)\sqrt{U} = \sqrt{U}I\sqrt{U} = U \]
+\end{proof}
+
+\begin{theorem}[proved in \cite{bansal-garg-17}, paraphrased as theorem 2.5 in \cite{bansal19rounding}]
+\label{thm:bansal-garg-17}
+Let $W$ be a set of vectors in $\mathbb{R}^m$ with $\dim(W) = (1-\delta)m$.
+Let $a > 0$ and $\eta > 1$ such that $a + 1/\eta \le \delta$.
+Then there is a $m$-by-$m$ $(a, \eta)$-sub-isotropic matrix $U$
+such that $\forall w \in W, w^T\sqrt{U} = 0$.
+Furthermore, such a $U$ can be found in polynomial time.
+\end{theorem}
+
+\begin{algorithm}[H]
+\caption{$\operatorname{sub-isotropic-iterround}(x, \delta)$:
+Sub-isotropic rounding for the LP
+${\min_x c^Tx \textrm{ where } Ax \le b \wedge 0 \le x \le 1}$.}
+\begin{algorithmic}[1]
+\State Let $R$ be the set of all fractional variables. Let $W = A[R]$.
+\State Find $U$ as per theorem \ref{thm:bansal-garg-17}
+with $a = \delta/10$ and $\eta = 10/(9\delta)$.
+$U$ is an $\abs{R}$-by-$\abs{R}$ matrix.
+\State Sample $r \in_R \{-1, 1\}^{\abs{R}}$ and $z = \sqrt{U}r$.
+\State Let $y \in \mathbb{R}^n$ such that
+${\displaystyle y_j = \begin{cases} z_j & \textrm{if } j \in R
+\\ 0 & \textrm{if } j \not\in R \end{cases} }$
+\State Compute the maximum value of $\gamma'$ so that
+$x + \gamma' y$ and $x - \gamma' y$ belong to $[0, 1]^n$.
+\State Let $\gamma = \min(\gamma', (2n\sqrt{n})^{-1})$.
+\State \Return $x + \gamma y$.
+\end{algorithmic}
+\end{algorithm}
+
+Let $x^{(k)} = x^{(k-1)} + \gamma^{(k)}y^{(k)}$.
+Since $y^{(k)}$ and $-y^{(k)}$ are equally likely to be chosen
+and $\gamma^{(k)}$ has the same value for $y^{(k)}$ and $-y^{(k)}$,
+$\E(\gamma^{(k)}y^{(k)}) = 0$. Therefore, $\E(X) = x^*$.
+
+\subsection{Running time}
+
+When $\gamma^{(k)} \neq (2n\sqrt{n})^{-1}$, then either $x^{(k-1)} + \gamma^{(k)}y^{(k)}$
+or $x^{(k-1)} - \gamma^{(k)}y^{(k)}$ or both have more integral variables than $x^{(k-1)}$.
+Therefore, the expected number of iterations where $\gamma^{(k)} \neq (2n\sqrt{n})^{-1}$
+is at most $2n$. For the purposes of analyzing the running time, we can now assume
+without loss of generality that $\gamma^{(k)} = (2n\sqrt{n})^{-1}$.
+Let $\gamma = (2n\sqrt{n})^{-1}$.
+
+For a random variable $Z$, define
+\[ \E_k(Z) = \E(Z | x^{(0)}, x^{(1)}, \ldots, x^{(k)}) \]
+Then
+\[ \E_{k-1}\left(\norm{x^{(k)}}^2\right) - \norm{x^{(k-1)}}^2
+= \gamma^2 \E_{k-1}\left(\norm{y^{(k)}}^2\right)
+= \gamma^2 \trace(U) \ge \gamma^2 a |R| \ge \gamma^2 a \]
+Therefore, expected rise in $\norm{x^{(k)}}^2$ is at least $\gamma^2 a$ in each iteration.
+The maximum value of $\norm{x^{(k)}}^2$ can be $n$.
+Using ideas from \cite{bansal10cadm} it can be proven that the algorithm terminates
+in $O(n/\gamma^2)$ time with constant probability.
+
+\subsection{Concentration}
+
+\begin{theorem}[Freedman-type martingale inequality; lemma 2.2 in \cite{bansal19rounding}]
+\label{thm:freedman}
+Let $[Z_0, Z_1, \ldots]$ be a sequence of random variables on $\mathbb{R}$
+where $Z_0$ is deterministic. Let $Y_k = Z_k - Z_{k-1}$.
+For a random variable $S$, define $\E_k(S) = \E(S | Z_1, Z_2, \ldots, Z_k)$.
+Then for $0 < \alpha < 1$ and $t \ge 0$,
+\[ (\forall 1 \le i \le k, (Y_i \le 1 \wedge \E_{i-1}[Y_i] \le -\alpha\E_{i-1}[Y_i^2]))
+\implies \Pr[Z_k - Z_0 > t] \le \exp(-\alpha t) \]
+\end{theorem}
+
+\begin{lemma}
+If we want to prove $\beta$-concentration, i.e. for all $a \in \mathbb{R}^n$,
+\[ Pr[a^T X - \E[a^T X] \ge t] \leq exp\left(-\frac{t^2/\beta}{
+2\left(\sum_i a_i^2(x_i - x_i^2) + \norm{a}_{\infty}t/3\right)}\right) \]
+then we can assume without loss of generality that $\norm{a}_{\infty} = 1$.
+\end{lemma}
+\begin{proof}[Proof sketch]
+Let $b = a/\norm{a}_{\infty}$. Then
+\[ \Pr(a^TX - \E(a^TX) \ge t) = \Pr(b^TX - \E(b^TX) \ge t/\norm{a}_{\infty}) \]
+\end{proof}
+
+Let $\mu = a^Tx^*$ and $v = \sum_{i=1}^n a_i^2x_i^*(1-x_i^*)$.
+Define the random variable $Z_k$ as
+\[ Z_k = \sum_{i=1}^n a_ix^{(k)}_i + \lambda\sum_{i=1}^n a_i^2x^{(k)}_i(1-x^{(k)}_i) \]
+where $\lambda = \frac{t}{t+2v} \le 1$.
+
+$Z_0 = \mu + \lambda v$ is deterministic.
+Let there be $T$ iterations, so $X = x^{(t)}$ is integral.
+Then $Z_T = a^TX$. Define $Y_k = Z_k - Z_{k-1}$.
+
+\begin{lemma}
+\[ \forall k > 0, \abs{Y_k} \le 1 \wedge \norm{y^{(k)}}^2 \le \gamma n
+\tag{claim 4.1 in \cite{bansal19rounding}} \]
+\[ \forall k > 0, \E_{k-1}[Y_k] \le -\frac{\lambda}{8\eta} \E_{k-1}[Y_k^2]
+\tag{claim 4.2 in \cite{bansal19rounding}} \]
+Here $\E_k(\cdot) = \E(\cdot | x^{(0)}, x^{(1)}, \ldots, x^{(k)})$.
+\end{lemma}
+The proof of the above lemma uses clever algebraic manipulation
+and the fact that $y^{(k)}$ is a $(a, \eta)$-sub-isotropic random variable.
+
+The above lemma allows us to use theorem \ref{thm:freedman}
+with $\alpha = \lambda/8\eta < 1$. This gives us
+\begin{align*}
+& \Pr(Z_T - Z_0 > t) \le \exp\left(-\frac{\lambda t}{8\eta} \right)
+\\ &\implies \Pr(a^TX - a^Tx^* > t + \lambda v)
+\le \exp\left(-\frac{1}{2} \frac{t^2/8\eta}{v + t/2} \right)
+\end{align*}
+It's easy to prove that $\lambda v \le t/2$. Therefore,
+\[ \Pr[a^TX - a^Tx^* > 3t/2] \le \Pr[a^TX - a^Tx^* > t + \lambda v] \]
+Let $t' = \frac{3t}{2}$. Then
+\[ \Pr[a^TX - a^Tx^* > t']
+\le \exp\left(-\frac{1}{2} \frac{t^2/8\eta}{v + t/2} \right)
+= \exp\left(-\frac{1}{2} \frac{{t'}^2/18\eta}{v + t'/3} \right) \]
+
+$18\eta = 18(10/9\delta) = 20/\delta$. Therefore, $X$ is $20/\delta$-concentrated.
+
+The results of this section can be summarized as follows:
+\begin{theorem}\label{thm:sub-isotropic}
+Suppose a problem $P$ has an iterated rounding algorithm $A$.
+Let $x^* \in [0, 1]^n$ be an optimal solution to the LP relaxation.
+Let $W^{(k)}$ be the set of constraints remaining at iteration $k$
+(i.e. the constraints not relaxed by $A$).
+If $\dim(W^{(k)}) < (1-\delta)n_k$ for $\delta \ge 0$,
+then the sub-isotropic rounding algorithm starting with $x^*$
+returns $X \in \{0,1\}^n$ such that
+\begin{itemize}
+    \item X satisfies all guarantees of $A$.
+    \item $\mathbb{E}[X] = x^*$
+    \item X is $\beta$-concentrated with $\beta = 20/\delta$
+\end{itemize}
+\end{theorem}

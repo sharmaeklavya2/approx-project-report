@@ -1,0 +1,14 @@
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.pdf
+
+.env
+*~
+*.sw[po]
+*.db
+Desktop.ini
+.DS_Store

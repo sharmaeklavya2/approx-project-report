@@ -1,0 +1,70 @@
+\section{Randomized iterative rounding}
+
+Consider a randomized variant of iterative rounding which is
+different from iterative rounding in these ways:
+\begin{itemize}
+\item The number of integral variables will not necessarily increase in every iteration,
+but the probability of it increasing is at least half.
+Therefore, the expected number of iterations is at most $2n$.
+\item The LP objective value need not improve in every iteration,
+but the expected objective value will remain the same.
+\end{itemize}
+
+We'll use Strategy 2 (section \ref{sec:it-str-2}) to design a randomized $\iterround$ subroutine.
+
+\begin{algorithm}[H]
+\caption{$\operatorname{rand-iterround}(x)$: Randomized iterative rounding for the LP
+${\min_x c^Tx \textrm{ where } Ax \le b \wedge 0 \le x \le 1}$.}
+\begin{algorithmic}[1]
+\State Find a subset of fractional variables $R$ and an arbitrary vector $y$ such that
+$\dim(W) < \abs{R}$, $Ay = 0$ and $y_j = 0$ for $j \not\in R$ where $W = A[R]$.
+\State ${\displaystyle y' = \begin{cases}y & \textrm{with probability }\frac{1}{2}
+\\ -y & \textrm{with probability } \frac{1}{2}\end{cases}}$
+\State Compute the maximum value of $\gamma$ so that
+$x + \gamma y$ and $x - \gamma y$ belong to $[0, 1]^n$.
+\State \Return $x + \gamma y'$.
+\end{algorithmic}
+\end{algorithm}
+
+Since $\gamma$ is chosen to be the maximum possible,
+at least one of $x + \gamma y$ and $x - \gamma y$ has an integral component in $R$.
+So with probability at least half, the number of integral variables increases.
+Therefore, the algorithm terminates with probability 1.
+
+The guarantees of iterative rounding are satisfied,
+i.e. $X$ is a valid LP solution (almost-valid if we used relaxation).
+
+$x^{(i+1)} = x^{(i)} + \gamma y'$.
+Since $\E(y') = 0$, $\E(x^{(i+1)}) = \E(x^{(i)})$.
+Therefore, the final integral solution $X = x^{(T)}$ satisfies $\E(X) = x^*$.
+
+Firstly, this means that $\E(c^TX) = c^Tx^*$ (by linearity of expectation),
+so the expected cost is at most the optimal.
+Secondly, for any $a \in \mathbb{R}^n$, $\E(a^TX) = a^Tx^*$.
+This can be used to get other desirable properties,
+like satisfying extra constraints in expectation.
+
+\subsection{Soft constraints}
+
+Suppose we want the solution to satisfy $a^TX \le d$ in expectation, i.e. $\E(a^TX) \le d$.
+We call such constraints `soft constraints'
+whereas the constraints in the original LP are `hard constraints'.
+Soft constraints are required to be satisfied in expectation while hard constraints
+are required to be satisfied unconditionally (or almost-satisfied if we use relaxation).
+
+This is how we can modify the randomized iterative rounding algorithm
+to satisfy soft constraints:
+\begin{itemize}
+\item Add soft constraints to the LP. Let $x^*$ be the optimal solution to this new LP.
+\item Ignore the soft constraints and apply randomized iterative rounding to get an integral solution $X$.
+\end{itemize}
+As per the guarantees of randomized iterative rounding, the hard constraints are
+satisfied (almost-satisfied if we used relaxation).
+The soft constraints, however, may not be satisfied since they were ignored during iterative rounding.
+But since $\E(X) = x^*$, and $x^*$ satisfies the soft constraints,
+$X$ satisfies the soft constraints in expectation.
+
+Although $X$ is $x^*$ in expectation, we often also want $X$ to be concentrated around $x^*$.
+Randomized iterative rounding cannot guarantee this.
+See \ref{bad-example-for-rand-itr} for an example of same.
+To achieve concentration, we turn to a more sophisticated rounding algorithm: sub-isotropic rounding.

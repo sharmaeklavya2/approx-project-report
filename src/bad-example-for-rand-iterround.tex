@@ -1,0 +1,14 @@
+\section{Bad example for randomized iterative rounding}\label{bad-example-for-rand-itr}
+Consider the problem of maximum-weight perfect bipartite matching in a cycle graph $G=C_n$,
+where $n$ is even and $E = E_o \cup E_e$ with the graph consisting of alternate edges
+from $E_o$ and $E_e$.
+Let $w: E \mapsto R^+$ be such that $E_o$ are light edges (of weight 1)
+and $E_e$ are heavy edges with some large weight. Let soft constraints be
+that we have to include at least $n/4$ light edges and $n/4$ heavy edges.
+
+Note that there is no integral solution which satisfies the soft constraints.
+In fact, the only possible integral solutions are either the heavy edges only or the light edges only.
+The only possible fractional solution to this LP is the one where each edge is half-selected.
+Therefore, randomized iterative rounding returns each integral solution with probability half.
+Since the objective value of these integral solutions are far apart,
+concentration cannot be achieved.

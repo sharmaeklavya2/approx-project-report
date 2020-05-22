@@ -1,0 +1,32 @@
+\subsection{Randomized rounding}
+
+For $x \in [0, 1]^n$, define the random variable $\randround(x) \in \{0, 1\}^n$ as
+\[ \randround(x)_i = \begin{cases} 1 & \textrm{with probability } x_i \\
+0 & \textrm{with probability } 1-x_i \end{cases} \]
+Here each component's value is set independently.
+
+In the simplest form of randomized rounding, $X = \randround(x^*)$.
+
+\subsubsection{What is it good for?}
+
+The main advantage of randomized rounding is that every constraint
+of the linear program holds `in expectation'.
+This is because $\E(X_i) = x^*_i$ and for any $a \in \mathbb{R}^n$,
+$\E(a^TX) = a^Tx^*$ by linearity of expectation.
+
+Furthermore, for many types of constraints, we can also obtain
+meaningful lower bounds on the probability of all constraints being satisfied
+using Chernoff's inequality or Bernstein's inequality
+because all components of $X$ are independent.
+
+For example, if we apply randomized rounding for the set-cover problem
+(with $m$ items and $n$ sets),
+Chernoff bound gives us that the probability of a constraint
+being violated is $\frac{1}{\sqrt{e}}$.
+Therefore, repeating randomized rounding
+$\Theta(\lg m)$ times and taking the union of all solutions
+would give us a feasible solution with high probability
+and expected cost $\Theta(\lg m)$ times the optimal.
+
+This framework is appropriate for problems where the constraints are `soft',
+i.e. we can tolerate small error in constraints.
