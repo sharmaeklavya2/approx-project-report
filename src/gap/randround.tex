@@ -19,19 +19,8 @@ will be assigned to a single machine.
 
 In the linear term $\sum_{j \in \delta(i)} p_{i,j}X_{i,j}$,
 the variables correspond to different jobs, so they are independent.
-Therefore, we can use Bernstein's inequality to prove concentration.
-
-We'll use this variant of Bernstein's inequality:
-\begin{lemma}
-\label{thm:my-bern}
-Let $X \in \{0, 1\}^n$ be a random variable with $\E(X) = x$.
-Let $X$ be $\gamma$-bernstein-concentrated.
-Let $\alpha \le a^Tx \le \beta$. Then
-\[ \Pr[ a^TX \ge (1+\delta)\beta ]
-\le \exp\left(\frac{-1}{2\gamma} \frac{\beta}{\norm{a}_{\infty}} \frac{\delta^2}{1+\delta/3} \right) \]
-\[ \Pr[ a^TX \le (1-\delta)\alpha ]
-\le \exp\left(\frac{-1}{2\gamma} \frac{\alpha}{\norm{a}_{\infty}} \frac{\delta^2}{1+\delta/3} \right) \]
-\end{lemma}
+Therefore, we can use a variant of Bernstein's inequality
+(theorem \ref{thm:lin-bound-bern-conc}) to prove concentration.
 \[ \Pr[\textrm{load on machine } i \ge (1+\delta)T_i]
 \le \exp\left( -\frac{1}{2} \frac{q_i}{T_i} \frac{1}{1+\frac{q_i}{3T_i}} \right) \]
 When $q_i$ can be as high as $T_i$, we get

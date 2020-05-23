@@ -25,9 +25,8 @@ i.e. it gives a valid assignment of jobs to machines such that the
 load on machine $i$ is at most $T_i + q_i/(1-2\delta)$.
 
 Sub-isotropic rounding ensures that all fairness constraints are satisfied in expectation.
-It also ensures that $X$ is $20/\delta$-Bernstein-concentrated,
-so for the $k\Th$ constraint (using a variant of Bernstein's inequality
-(lemma \ref{thm:my-bern})), we get
+It also ensures that $X$ is $20/\delta$-Bernstein-concentrated.
+So for the $k\Th$ constraint, using theorem \ref{thm:lin-bound-bern-conc}, we get
 \[ \Pr\left[ \begin{array}{cc}\textrm{load on machine } i
 \\ \textrm{due to category } C_k \end{array} \ge (1+\epsilon)\beta T_i \right]
 \le \exp\left( \frac{-\delta}{40} \frac{T_i}{q_i}
