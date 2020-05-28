@@ -1,8 +1,12 @@
+\usepackage{amsmath,amstext,amssymb,amsfonts}
+\usepackage{amsthm}
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{Claim}[theorem]{Claim}	
 
 \newcommand*{\floor}[1]{\left\lfloor #1 \right\rfloor}
 \newcommand*{\ceil}[1]{\left\lceil #1 \right\rceil}
@@ -22,3 +26,20 @@
 #1 & \multicolumn{2}{>{\displaystyle}l}{#2}
 #3 \end{array}}
 
+% parentheses
+\newcommand{\paren}[1]{\left(#1 \right )}
+\newcommand{\Paren}[1]{\left(#1 \right )}
+
+% linear algebra
+\newcommand{\inprod}[1]{\left\langle #1\right\rangle}
+
+% norm
+\newcommand{\snorm}[1]{\norm{#1}^2}
+
+% L2 norm
+\newcommand{\normt}[1]{\norm{#1}_{\scriptstyle 2}}
+\newcommand{\snormt}[1]{\norm{#1}^2_2}
+
+% set braces
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\Set}[1]{\left\{#1\right\}}

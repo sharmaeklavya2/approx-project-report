@@ -1,0 +1,92 @@
+\section{Discrepancy Minimization}
+A fundamental problem in combinatorics is minimizing the discrepancy of a set system. 
+Given a set system $\paren{\mathcal{S} = \set{S_1,S_2,\hdots,S_m}}$, formed by taking subsets of universe $\paren{V = \set{1,2,\hdots,n}}$, we define a coloring $\chi(V) : V \to \set{-1,+1}$.
+The minimum discrepancy of the set system $\paren{\text{disc}\paren{\mathcal{S}}}$ is defined as 
+\[ \text{disc}\paren{\mathcal{S}} = \text{min}_{\chi}\text{max}_{S \in \mathcal{S}}{\abs{\sum_{i \in S}{\chi(i)}}} \]
+This can be generalised to define discrepancy for arbitrary real matrices $A$ (here we consider $A$ as the incidence matrix of $\paren{V,S}$) as 
+\[ \text{disc}(A) = \text{min}_{x \in \set{-1,+1}^n} \norm{Ax}_{\infty}\]
+For a random coloring, the resulting discrepancy can be shown to be bounded by $3\sqrt{n\text{log}m}$ using Chernoff and Union bounds.
+In \cite{Spencer1985} Spencer showed that for any set system $\mathcal{S}$, there exists a coloring $\chi$ such that $\text{disc}(\mathcal{S}) < K\sqrt{n\;\text{log}_2{(m/n)}}$.
+For $m=n$ (our regime of interest from now onwards) we can set $K=6$ and we get a significant improvement compared to random coloring. 
+Infact, this is tight if we consider the incidence matrix of $\paren{V,S}$ to be a Hadamard matrix. The proof is non-constructive and it was conjectured by Spencer that no efficient algorithm exists for finding such a coloring. 
+
+In a breakthrough result \cite{bansal10cadm} Nikhil Bansal gave the first polynomial time randomized algorithm which gives a coloring with discrepancy $O(\sqrt{n})$.
+The algorithm is based on SDP relaxation of the problem and rounding using random walks .
+Shachar Lovett and Raghu Meka \cite{12lovettmeka} gave a simpler randomized polynomial time algorithm based on basic linear algebra and a restricted form of random walk called edge walk.
+We discuss the result by Lovett and Meka here.
+
+We state a few properties about Gaussians (without proof).
+\begin{Claim} \label{gaussian_properties}
+Let $\mathcal{N}\paren{\mu,{\sigma}^2}$ denote a Gaussian distribution with mean $\mu$ and variance ${\sigma}^2$. Let $\set{v_1,v_2,\hdots,v_d}$ be an orthonormal basis for a linear subspace $V \subseteq \mathbb{R}^n$. 
+The standard multi-dimensional Gaussian supported on $V$ is given by $G \sim \mathcal{N}(V) = G_1v_1 + \hdots + G_dv_d$ where $G_1,G_2,\hdots,G_d \sim \mathcal{N}(0,1)$, we have that,\\
+(i) For all $u \in \mathbb{R}^n, \inprod{G,u} \sim \mathcal{N}(0,{\sigma}^2)$ where ${\sigma}^2 \leq \norm{u}^2$\\
+(ii) Let $\inprod{G,e_i} \sim \mathcal{N}(0,{\sigma}^2)$, then $\sum_{i=1}^{n}{\sigma_i}^2 = \text{dim}(V)$\\
+(iii) For $G \sim \mathcal{N}(0,1), \lambda >0, Pr\left[\abs{G}>\lambda\right] \leq 2e^{-{\lambda}^2/2} $\\
+(iv) Let $\set{X_i}_{i=1}^{T}$ and $\set{Y_i}_{i=1}^{T}$ be bunch of random variables such that $Y_i$ is a function of $X_i$. If $Y_i|\paren{X_1 = x_1,X_2=x_2,\hdots,X_{i-1}=x_{i-1}}$ is a Gaussian with 0 mean and variance at most 1, for all $1 \leq i \leq T,x_1,\hdots,x_{i-1}\in \mathbb{R}$ and for $\lambda > 0$
+\[ Pr\left[\abs{Y_1 + \hdots + Y_T} \geq \lambda\sqrt{T}\right] \leq 2e^{-{\lambda}^2/2} \]
+\end{Claim}
+
+The algorithm rests on a Partial Coloring Lemma \ref{pcl}. Partial Coloring Method was developed by Beck \cite{Beck1981} by relaxing the discrepancy vector to $\set{-1,0,+1}$. Here it is further relaxed to $\left[-1,+1\right]$. 
+We denote the relaxed discrepancy vector by $x$.
+
+\begin{lemma} [Partial Coloring Lemma]\label{pcl}
+Let $v_1,\hdots,v_m \in \mathbb{R}^n$ be vectors and $c_1,\hdots,c_m \geq 0$ be constants such that $\sum_{j=1}^{n}e^{{-c_j}^2/16} \leq n/16$ and $\delta > 0$ be a small approximation parameter.
+There exists a randomized algorithm running in time $O\paren{(m+n)^3{\delta}^{-2}log(mn/\delta)}$ which starting at $x_0 \in [-1,1]^n$ returns the vector $x \in [-1,1]^n$ with probability at least $0.1$, such that\\
+\qquad (i) $\abs{\inprod{x-x_0,v_j}} \leq c_j\norm{v_j}$ \qquad \qquad \qquad \qquad
+(ii) $\abs{\set{i:x_i \geq 1- \delta}} \geq n/2$
+\end{lemma}
+We normalize all $\norm{v_i}=1$ and consider the polytope $\mathcal{P}$ for feasible $x$ as 
+\[ \mathcal{P} = \set{x\in \mathbb{R}^n : \abs{x_i} \leq 1, \abs{\inprod{x-x_0,v_j} \leq c_j} }\] where the constraints are called variable constraints and discrepancy constraints respectively. 
+We consider a constrained random walk in $\mathcal{P}$ called Edge-walk starting at $x=x_0$ and run it for time $T$. Let $\gamma >0$ be the step size of walk such that $\delta = O(\gamma \sqrt{log(nm/\gamma)}) < 0.1$. For $t= 1,\hdots,T$ we define,\\
+(i) $C_t^{var} := C_t^{var}\paren{X_{t-1}} = \set{ i \in [n] : \abs{\paren{X_{t-1}}_i} \geq 1- \delta}$ \\
+(ii) $C_t^{disc} := C_t^{disc}\paren{X_{t-1}} = \set{j \in [m] : \abs{\inprod{X_{t-1}-x_0,v_j}} \geq c_j - \delta}$ \\
+(iii) $\mathcal{V}_t := \mathcal{V}\paren{X_{t-1}} = \set{u \in \mathbb{R}^n : u_i = 0, \forall i \in C_t^{var}; \inprod{u,v_j}=0, \forall j \in C_t^{disc} }$  \\
+(iv) $X_t = X_{t-1} + \gamma U_t$,where $U_t \sim \mathcal{N}\paren{\mathcal{V}_t}$
+
+$C_t^{var}$ and $C_t^{disc}$ denote almost satisfied variable and discrepancy constraints and $\mathcal{V}$ is the subspace orthogonal to the constraints that have been satisfied.
+We first observe that the dimension of subspace shrinks at each iteration
+\begin{Claim}
+$C_t^{var} \subseteq C_{t+1}^{var}$, $C_t^{disc} \subseteq C_{t+1}^{disc}$ and $dim(\mathcal{V}_t) \geq dim(\mathcal{V}_{t+1})$ $\forall$ $1 \leq t \leq T$
+\end{Claim}
+Next we claim that this edge walk remains inside $\mathcal{P}$ with high probability.
+\begin{Claim}
+For a small step size $\gamma \leq \delta/\sqrt{Clog(mn/\gamma)}$ and large constant $C$, the probability that walk never leaves $\mathcal{P}$ $\paren{X_0,\hdots,X_T \in \mathcal{P}}$ is at least $1 - 1/(mn)^{C-2}$.
+\end{Claim}
+Let $E_t$ be the event that the walk leaves $\mathcal{P}$ for the first time. 
+For this to happen one of the constraint in polytope has to be violated, say $(X_t)_i>1$. 
+This implies that $(X_{t-1})_i \leq 1 - \delta$ as otherwise $i \in C_t^{var}$ and $(U_t)_i=0$ and $(X_{t})_i=(X_{t-1})_i$. 
+The above holds if $\abs{(U_t)_i} \geq \delta/\gamma$ which is implied by the event that $\abs{\inprod{U_t,w}} \geq \delta/\gamma$.
+Since $U_t \sim \mathcal{N}(\mathcal{V}_t)$, by Claim \ref{gaussian_properties} $\inprod{U_t,w}$ is a standard Gaussian and invoking the tail bound in Claim \ref{gaussian_properties} we get the desired result.
+
+Next we show that on average only a few discrepancy constraints are satisfied,
+\begin{Claim}
+$\mathbb{E}\left[\abs{C_T^{disc}} < n/8 \right]$
+\end{Claim}
+\begin{proof}
+We define $Y_t = c_j\inprod{\frac{v_j}{\norm{v_j}},U_t}$. $Y_t$ is a Gaussian with mean 0 and variance at most $\norm{u}^2 = {c_j}^2$ a function of $U_t$.
+$Y_t|(U_1,\hdots,U_t)$ is a Gaussian and using the martingale bound in Claim \ref{gaussian_properties},  with $\lambda = 0.9c_j$ we can show that,
+\[Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}\]
+For our choice of $\delta = 0.1$, $Pr[j \in C_T^{disc}] = Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}$
+Let $Z_j$ be indicator for $j^{th}$ discrepancy constraint being satisfied,
+\begin{align*}
+    \mathbb{E}[\abs{C_T^{disc}}] 
+    &= \mathbb{E}[Z_1+\hdots+Z_m]
+    = \mathbb{E}[Z_1] + \hdots + \mathbb{E}[Z_m]\\
+    &= Pr[1 \in C_T^{disc}] + \hdots + Pr[m \in C_T^{disc}]
+    \leq 2\sum_{j=1}^{m}{e^{{-c_j}^2/16}} \leq 2.\dfrac{n}{16} = \dfrac{n}{8}
+\end{align*}
+\end{proof}
+\begin{Claim}
+$\mathbb{E}[\norm{X_t}^2 \leq n]$
+\end{Claim}
+\begin{Claim} \label{variable_constraint_bound}
+$\mathbb{E}[\abs{C_T^{var}}] \geq 0.56n$
+\end{Claim}
+\begin{proof}[Proof of Lemma \ref{pcl}]
+\begin{align*}
+  \mathbb{E}[\abs{C_T^{var}}] 
+&\leq nPr\left[\abs{C_T^{var}} \geq \dfrac{n}{2}\right] + \dfrac{n}{2}\paren{1- Pr\left[\abs{C_T^{var}} \geq \dfrac{n}{2}\right]}\\
+&\leq \dfrac{n}{2}Pr\left[\abs{C_T^{var}} \geq \dfrac{n}{2}\right]  + \dfrac{n}{2}
+\end{align*}
+Using Claim \ref{variable_constraint_bound}, we get that $Pr\left[\abs{C_T^{var}} > \dfrac{n}{2}\right] > 0.12 (> 0.1)$
+\end{proof}
