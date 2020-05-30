@@ -2,11 +2,11 @@
 A fundamental problem in combinatorics is minimizing the discrepancy of a set system. 
 Given a set system $\paren{\mathcal{S} = \set{S_1,S_2,\hdots,S_m}}$, formed by taking subsets of universe $\paren{V = \set{1,2,\hdots,n}}$, we define a coloring $\chi(V) : V \to \set{-1,+1}$.
 The minimum discrepancy of the set system $\paren{\text{disc}\paren{\mathcal{S}}}$ is defined as 
-\[ \text{disc}\paren{\mathcal{S}} = \text{min}_{\chi}\text{max}_{S \in \mathcal{S}}{\abs{\sum_{i \in S}{\chi(i)}}} \]
+\[ \text{disc}\paren{\mathcal{S}} = \min_{\chi}\max_{S \in \mathcal{S}}{\abs{\sum_{i \in S}{\chi(i)}}} \]
 This can be generalised to define discrepancy for arbitrary real matrices $A$ (here we consider $A$ as the incidence matrix of $\paren{V,S}$) as 
-\[ \text{disc}(A) = \text{min}_{x \in \set{-1,+1}^n} \norm{Ax}_{\infty}\]
-For a random coloring, the resulting discrepancy can be shown to be bounded by $3\sqrt{n\text{log}m}$ using Chernoff and Union bounds.
-In \cite{Spencer1985} Spencer showed that for any set system $\mathcal{S}$, there exists a coloring $\chi$ such that $\text{disc}(\mathcal{S}) < K\sqrt{n\;\text{log}_2{(m/n)}}$.
+\[ \text{disc}(A) = \min_{x \in \set{-1,+1}^n} \norm{Ax}_{\infty}\]
+For a random coloring, the resulting discrepancy can be shown to be bounded by $3\sqrt{n\log m}$ using Chernoff and Union bounds.
+In \cite{Spencer1985} Spencer showed that for any set system $\mathcal{S}$, there exists a coloring $\chi$ such that $\text{disc}(\mathcal{S}) < K\sqrt{n\;\log_2{(m/n)}}$.
 For $m=n$ (our regime of interest from now onwards) we can set $K=6$ and we get a significant improvement compared to random coloring. 
 Infact, this is tight if we consider the incidence matrix of $\paren{V,S}$ to be a Hadamard matrix. The proof is non-constructive and it was conjectured by Spencer that no efficient algorithm exists for finding such a coloring. 
 
@@ -31,31 +31,31 @@ We denote the relaxed discrepancy vector by $x$.
 
 \begin{lemma} [Partial Coloring Lemma]\label{pcl}
 Let $v_1,\hdots,v_m \in \mathbb{R}^n$ be vectors and $c_1,\hdots,c_m \geq 0$ be constants such that $\sum_{j=1}^{n}e^{{-c_j}^2/16} \leq n/16$ and $\delta > 0$ be a small approximation parameter.
-There exists a randomized algorithm running in time $O\paren{(m+n)^3{\delta}^{-2}log(mn/\delta)}$ which starting at $x_0 \in [-1,1]^n$ returns the vector $x \in [-1,1]^n$ with probability at least $0.1$, such that\\
+There exists a randomized algorithm running in time $O\paren{(m+n)^3{\delta}^{-2}\log(mn/\delta)}$ which starting at $x_0 \in [-1,1]^n$ returns the vector $x \in [-1,1]^n$ with probability at least $0.1$, such that\\
 \qquad (i) $\abs{\inprod{x-x_0,v_j}} \leq c_j\norm{v_j}$ \qquad \qquad \qquad \qquad
 (ii) $\abs{\set{i:x_i \geq 1- \delta}} \geq n/2$
 \end{lemma}
 We normalize all $\norm{v_i}=1$ and consider the polytope $\mathcal{P}$ for feasible $x$ as 
 \[ \mathcal{P} = \set{x\in \mathbb{R}^n : \abs{x_i} \leq 1, \abs{\inprod{x-x_0,v_j} \leq c_j} }\] where the constraints are called variable constraints and discrepancy constraints respectively. 
-We consider a constrained random walk in $\mathcal{P}$ called Edge-walk starting at $x=x_0$ and run it for time $T$. Let $\gamma >0$ be the step size of walk such that $\delta = O(\gamma \sqrt{log(nm/\gamma)}) < 0.1$. For $t= 1,\hdots,T$ we define,\\
+We consider a constrained random walk in $\mathcal{P}$ called Edge-walk starting at $x=x_0$ and run it for time $T$. Let $\gamma >0$ be the step size of walk such that $\delta = O(\gamma \sqrt{\log(nm/\gamma)}) < 0.1$. For $t= 1,\hdots,T$ we define,\\
 (i) $C_t^{var} := C_t^{var}\paren{X_{t-1}} = \set{ i \in [n] : \abs{\paren{X_{t-1}}_i} \geq 1- \delta}$ \\
 (ii) $C_t^{disc} := C_t^{disc}\paren{X_{t-1}} = \set{j \in [m] : \abs{\inprod{X_{t-1}-x_0,v_j}} \geq c_j - \delta}$ \\
 (iii) $\mathcal{V}_t := \mathcal{V}\paren{X_{t-1}} = \set{u \in \mathbb{R}^n : u_i = 0, \forall i \in C_t^{var}; \inprod{u,v_j}=0, \forall j \in C_t^{disc} }$  \\
 (iv) $X_t = X_{t-1} + \gamma U_t$,where $U_t \sim \mathcal{N}\paren{\mathcal{V}_t}$
 
 $C_t^{var}$ and $C_t^{disc}$ denote almost satisfied variable and discrepancy constraints and $\mathcal{V}$ is the subspace orthogonal to the constraints that have been satisfied.
-We first observe that the dimension of subspace shrinks at each iteration
+We first observe that the update can only shrink the null space at each iteration.
 \begin{Claim}
 $C_t^{var} \subseteq C_{t+1}^{var}$, $C_t^{disc} \subseteq C_{t+1}^{disc}$ and $dim(\mathcal{V}_t) \geq dim(\mathcal{V}_{t+1})$ $\forall$ $1 \leq t \leq T$
 \end{Claim}
 Next we claim that this edge walk remains inside $\mathcal{P}$ with high probability.
 \begin{Claim}
-For a small step size $\gamma \leq \delta/\sqrt{Clog(mn/\gamma)}$ and large constant $C$, the probability that walk never leaves $\mathcal{P}$ $\paren{X_0,\hdots,X_T \in \mathcal{P}}$ is at least $1 - 1/(mn)^{C-2}$.
+For a small step size $\gamma \leq \delta/\sqrt{C\log(mn/\gamma)}$ and large constant $C$, the probability that walk never leaves $\mathcal{P}$ $\paren{X_0,\hdots,X_T \in \mathcal{P}}$ is at least $1 - 1/(mn)^{C-2}$.
 \end{Claim}
 Let $E_t$ be the event that the walk leaves $\mathcal{P}$ for the first time. 
 For this to happen one of the constraint in polytope has to be violated, say $(X_t)_i>1$. 
 This implies that $(X_{t-1})_i \leq 1 - \delta$ as otherwise $i \in C_t^{var}$ and $(U_t)_i=0$ and $(X_{t})_i=(X_{t-1})_i$. 
-The above holds if $\abs{(U_t)_i} \geq \delta/\gamma$ which is implied by the event that $\abs{\inprod{U_t,w}} \geq \delta/\gamma$.
+The above holds if $\abs{(U_t)_i} \geq \delta/\gamma$ which implies that $\abs{\inprod{U_t,w}} \geq \delta/\gamma$ for some $w$.
 Since $U_t \sim \mathcal{N}(\mathcal{V}_t)$, by Claim \ref{gaussian_properties} $\inprod{U_t,w}$ is a standard Gaussian and invoking the tail bound in Claim \ref{gaussian_properties} we get the desired result.
 
 Next we show that on average only a few discrepancy constraints are satisfied,
@@ -63,7 +63,7 @@ Next we show that on average only a few discrepancy constraints are satisfied,
 $\mathbb{E}\left[\abs{C_T^{disc}} < n/8 \right]$
 \end{Claim}
 \begin{proof}
-We define $Y_t = c_j\inprod{\frac{v_j}{\norm{v_j}},U_t}$. $Y_t$ is a Gaussian with mean 0 and variance at most $\norm{u}^2 = {c_j}^2$ a function of $U_t$.
+We define $Y_t = c_j\inprod{\frac{v_j}{\norm{v_j}},U_t}$. $Y_t$ is a Gaussian with mean 0 and variance at most $\norm{u}^2 = {c_j}^2$ and a function of $U_t$.
 $Y_t|(U_1,\hdots,U_t)$ is a Gaussian and using the martingale bound in Claim \ref{gaussian_properties},  with $\lambda = 0.9c_j$ we can show that,
 \[Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}\]
 For our choice of $\delta = 0.1$, $Pr[j \in C_T^{disc}] = Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}$
@@ -76,12 +76,14 @@ Let $Z_j$ be indicator for $j^{th}$ discrepancy constraint being satisfied,
     \leq 2\sum_{j=1}^{m}{e^{{-c_j}^2/16}} \leq 2.\dfrac{n}{16} = \dfrac{n}{8}
 \end{align*}
 \end{proof}
-\begin{Claim}
-$\mathbb{E}[\norm{X_t}^2 \leq n]$
+We next show that in expectation a large number of variable constraints are satisfied,
+\begin{Claim} \label{expt_distance}
+$\mathbb{E}[\norm{X_T}^2 \leq n]$
 \end{Claim}
 \begin{Claim} \label{variable_constraint_bound}
 $\mathbb{E}[\abs{C_T^{var}}] \geq 0.56n$
 \end{Claim}
+If an update has a large $\abs{C_t^{var}}$ it helps with the Claim \ref{variable_constraint_bound} while if $\abs{C_t^{var}}$ is small, there is a lot of freedom in null space and by Claim \ref{gaussian_properties} $\E\left[\norm{X_t}^2\right]$ increases significantly which cannot happen too often due to Claim \ref{expt_distance}
 \begin{proof}[Proof of Lemma \ref{pcl}]
 \begin{align*}
   \mathbb{E}[\abs{C_T^{var}}] 
@@ -89,4 +91,16 @@ $\mathbb{E}[\abs{C_T^{var}}] \geq 0.56n$
 &\leq \dfrac{n}{2}Pr\left[\abs{C_T^{var}} \geq \dfrac{n}{2}\right]  + \dfrac{n}{2}
 \end{align*}
 Using Claim \ref{variable_constraint_bound}, we get that $Pr\left[\abs{C_T^{var}} > \dfrac{n}{2}\right] > 0.12 (> 0.1)$
+\end{proof}
+\begin{theorem}
+For a set system $\paren{V,\mathcal{S}}$ there exists a polynomial time randomized algorithm running in time $O(m+n)^3$ that computes a coloring $\chi(V)$ such that disc$\paren{\mathcal{S}} < K\sqrt{n\log_2(m/n)}$ for a constant $K$.
+\end{theorem}
+\begin{proof}
+Let $\delta = 1/n^2$ and $c_j = \alpha(m,n) = 8 \sqrt{\log(m/n)}$ (to satisfy conditions for Lemma \ref{pcl}) and set $x_0 =0^n$ and apply Lemma \ref{pcl} to obtain a vector $x_1 \in [-1,1]^n$ which satisfies 
+$\abs{\inprod{v_i,x_1}} \leq 8\sqrt{n}\sqrt{\log(m/n)}$ and $\abs{\set{i : x_i \geq 1 - \delta}} \geq n/2$ with probability 0.1 (can be boosted).\par
+The variables which satisfy variable constraint are fixed and the corresponding columns is removed from the incidence matrix of $(V,\mathcal{S})$ to obtain a new set of vectors restricted to the remaining variables ($I_t$) as ${v_i}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_t}}$ and start the whole procedure again with ${x_1}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_1}}$.
+We need to repeat the procedure for $2\log n$ times so that $\abs{x_i} \geq 1- \delta, \forall i \in [n]$ and $\abs{v_j,x} < K\sqrt{n\log(m/n)}, \forall j \in [m]$. 
+
+To get a proper coloring we round $x$ as $\chi(i) = sign(x_i) $,
+\[ \inprod{v_j,\chi} = \inprod{v_j,x} \pm \delta n \leq K\sqrt{n\log(m/n)} + 1/n \leq (K+1)\sqrt{n\log(m/n)} \]
 \end{proof}
