@@ -90,7 +90,16 @@ $\mathbb{E}[\norm{X_T}^2 \leq n]$
 \begin{Claim} \label{variable_constraint_bound}
 $\mathbb{E}[\abs{C_T^{var}}] \geq 0.56n$
 \end{Claim}
-If an update has a large $\abs{C_t^{var}}$ it helps with the Claim \ref{variable_constraint_bound} while if $\abs{C_t^{var}}$ is small, there is a lot of freedom in null space and by Claim \ref{gaussian_properties} $\E\left[\norm{X_t}^2\right]$ increases significantly which cannot happen too often due to Claim \ref{expt_distance}
+\begin{proof}[Proof sketch]
+If $\E[\abs{C_T^{var}}] \ge 0.56n$, then we are done.
+If $\E[\abs{C_T^{var}}] < 0.56n$, then by Claim \ref{thm:less-disc-constraints},
+$\E[\dim(\mathcal{V}_t)]$ is sufficiently large for all $t$.
+
+By Claim \ref{gaussian_properties}(ii), for all $t$,
+$\E[\norm{X_t}_2^2] = \E[\norm{X_{t-1}}_2^2] + \gamma^2\E[\dim(\mathcal{V}_t)]$,
+so $\E[\norm{X_t}_2^2]$ increases significantly for all $t$,
+which cannot happen by Claim \ref{expt_distance}.
+\end{proof}
 \begin{proof}[Proof of Lemma \ref{pcl}]
 \begin{align*}
   \mathbb{E}[\abs{C_T^{var}}] 
