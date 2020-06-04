@@ -35,16 +35,23 @@ The algorithm rests on a Partial Coloring Lemma \ref{pcl}. Partial Coloring Meth
 We denote the relaxed discrepancy vector by $x$.
 
 \begin{lemma} [Partial Coloring Lemma]\label{pcl}
-Let $v_1,\hdots,v_m \in \mathbb{R}^n$ be vectors and $c_1,\hdots,c_m \geq 0$ be constants such that $\sum_{j=1}^{n}e^{{-c_j}^2/16} \leq n/16$ and $\delta > 0$ be a small approximation parameter.
-There exists a randomized algorithm running in time $O\paren{(m+n)^3{\delta}^{-2}\log(mn/\delta)}$ which starting at $x_0 \in [-1,1]^n$ returns the vector $x \in [-1,1]^n$ with probability at least $0.1$, such that\\
-\qquad (i) $\abs{\inprod{x-x_0,v_j}} \leq c_j\norm{v_j}$ \qquad \qquad \qquad \qquad
+Let $v_1,\hdots,v_m \in \mathbb{R}^n$ be vectors and $c_1,\hdots,c_m \geq 0$ be constants such that
+$\sum_{j=1}^{m}e^{{-c_j}^2/16} \leq n/16$.
+Let $0 < \delta \le 0.1\min_{j=1}^m c_j$ be a small approximation parameter.
+There exists a $O\paren{(m+n)^3{\delta}^{-2}\log(mn/\delta)}$-time randomized algorithm
+which starting at $x_0 \in [-1,1]^n$ returns the vector $x \in [-1,1]^n$
+with probability at least $0.1$, such that\\
+\qquad (i) $\forall j, \abs{\inprod{x-x_0,v_j}} \leq c_j\norm{v_j}$ \qquad \qquad \qquad \qquad
 (ii) $\abs{\set{i: \abs{x_i} \geq 1- \delta}} \geq n/2$
 \end{lemma}
 
 We normalize all $\norm{v_i}=1$ and consider the polytope $\mathcal{P}$ for feasible $x$ as
 \[ \mathcal{P} = \set{x\in \mathbb{R}^n : \abs{x_i} \leq 1 \wedge \abs{\inprod{x-x_0,v_j}} \leq c_j }\]
 where the constraints are called variable constraints and discrepancy constraints respectively.
-We consider a constrained random walk in $\mathcal{P}$ called Edge-walk starting at $x=x_0$ and run it for $T$ steps. Let $\gamma >0$ be the step size of the walk such that $\delta = O(\gamma \sqrt{\log(nm/\gamma)}) < 0.1$. For $t= 1,\hdots,T$ we define,\\
+We consider a constrained random walk in $\mathcal{P}$ called Edge-walk starting at $x=x_0$
+and run it for $T$ steps. Let $\gamma >0$ be the step size of the walk such that
+$\delta = O(\gamma \sqrt{\log(nm/\gamma)})$. Let $T = \frac{16}{3\gamma^2}$.
+For $t= 1,\hdots,T$ we define,\\
 (i) $\Cvar_t := \Cvar_t\paren{X_{t-1}} = \set{ i \in [n] : \abs{\paren{X_{t-1}}_i} \geq 1- \delta}$ \\
 (ii) $\Cdisc_t := \Cdisc_t\paren{X_{t-1}} = \set{j \in [m] : \abs{\inprod{X_{t-1}-x_0,v_j}} \geq c_j - \delta}$ \\
 (iii) $\mathcal{V}_t := \mathcal{V}\paren{X_{t-1}} = \set{u \in \mathbb{R}^n : \paren{u_i = 0, \forall i \in \Cvar_t} \wedge \paren{\inprod{u,v_j}=0, \forall j \in \Cdisc_t} }$  \\
@@ -72,24 +79,25 @@ Invoking the tail bound in Claim \ref{gaussian_properties} gives us the desired 
 Next we show that on an average, only a few discrepancy constraints are almost satisfied.
 \begin{Claim}
 \label{thm:less-disc-constraints}
-$\mathbb{E}\left[\abs{\Cdisc_T} < n/8 \right]$
+$\E\left[\abs{\Cdisc_T} < n/8 \right]$
 \end{Claim}
 \begin{proof}
-Let $\delta = 0.1c_j$, $\Pr[j \in \Cdisc_T] = \Pr\left[ \abs{Y_1+\hdots+Y_T} > c_j - \delta = 0.9c_j \right]$.
-We define $Y_t = \gamma\inprod{\frac{v_j}{\norm{v_j}},U_t}$ to be a Gaussian with mean 0 and variance at most ${\gamma}^2$ and as a function of $U_t$.
-Now $Y_t|(U_1,\hdots,U_{t-1})$ is a Gaussian but with variance ${\lambda}^2$, so we normalize to apply martingale bound in Claim \ref{gaussian_properties},  with $\lambda = \frac{0.9c_j}{\gamma \sqrt{T}}$ and hence,
-\[\Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{-\frac{0.81{c_j}^2}{{\gamma}^2T}}\]
-and for $T = \frac{16}{0.81{\gamma}^2}$, we get that
-\[\Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}\]
-Let $Z_j$ be indicator for $j\Th$ discrepancy constraint being satisfied,
-\begin{align*}
-    \mathbb{E}[\abs{\Cdisc_T}]
-    &= \mathbb{E}[Z_1+\hdots+Z_m]
-    = \mathbb{E}[Z_1] + \hdots + \mathbb{E}[Z_m]\\
-    &= \Pr[1 \in \Cdisc_T] + \hdots + \Pr[m \in \Cdisc_T]
-    \leq 2\sum_{j=1}^{m}{e^{{-c_j}^2/16}} \leq 2.\dfrac{n}{16} = \dfrac{n}{8}
-\end{align*}
+Define $Y_t = \inprod{v_j,U_t}$. Since $\delta \le 0.1 c_j$ for all $j$, $\Pr[j \in \Cdisc_T]$
+\[ = \Pr\left[ \abs{\inprod{v_j, X - x_0}} \ge c_j - \delta \right]
+\le \Pr\left[ \abs{\inprod{v_j, X - x_0}} \ge 0.9c_j \right]
+= \Pr\left[ \abs{\sum_{t=1}^T Y_t} \ge \frac{0.9c_j}{\gamma} \right] \]
+$Y_t|(U_1,\hdots,U_{t-1})$ is a Gaussian with mean 0 and variance at most 1 and is a function of $U_t$.
+So apply Claim \ref{gaussian_properties}(iv) to get
+\[ \Pr\left[ \abs{\sum_{t=1}^T Y_t} \ge \frac{0.9c_j}{\gamma} \right]
+\le 2\exp\left(-\frac{0.81 c_j^2}{2\gamma^2T}\right)
+= 2\exp\left(-1.215 \frac{c_j^2}{16}\right)
+\le 2\exp\left(-\frac{c_j^2}{16}\right) \]
+\[ \E[\abs{\Cdisc_T}]
+= \sum_{j=1}^m \Pr[j \in \Cdisc_T]
+\le 2\sum_{j=1}^m \exp\left(-\frac{c_j^2}{16}\right)
+\le 2\frac{n}{16} = \frac{n}{8} \]
 \end{proof}
+
 We next show that, in expectation, a large number of variable constraints is satisfied.
 \begin{Claim} \label{expt_distance}
 $\mathbb{E}[\norm{X_T}^2 \leq n]$
