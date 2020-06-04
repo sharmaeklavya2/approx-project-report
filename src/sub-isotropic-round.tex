@@ -6,19 +6,8 @@ satisfy constraints in expectation and with concentration.
 Sub-isotropic rounding is a rounding algorithm by Nikhil Bansal
 which combines the advantages of both iterative rounding and randomized rounding:
 we can satisfy hard constraints exactly and satisfy soft constraints
-in expectation and with concentration.
-
-We'll now formally describe what we mean by `with concentration'.
-\begin{definition} [Bernstein's inequality with $\beta$-concentration]
-For $\beta \geq 1$, a random vector $X \in \{0, 1\}^n$ with mean $x$
-satisfies Bernstein's inequality with $\beta$-concentration
-iff $\forall a \in \mathbb{R}^n$
-\[ Pr[a^T X - \E[a^T X] \ge t] \leq \exp\left(-\frac{t^2/\beta}{
-2\left(\sum_i a_i^2(x_i - x_i^2) + \norm{a}_{\infty}t/3\right)}\right) \]
-Replacing $X$ by $1-X$ tells us about the lower tail.
-\end{definition}
-Sub-isotropic rounding takes a parameter $\delta$ as input.
-The output $X$ is $O(1/\delta)$-concentrated.
+in expectation and with $O(1/\delta)$-bernstein-concentration,
+where $\delta$ is a parameter to the algorithm.
 
 Sub-isotropic rounding works in a way very similar to
 Strategy 2 (section \ref{sec:it-str-2}) of iterative rounding.
