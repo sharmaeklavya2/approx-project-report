@@ -100,10 +100,10 @@ So apply Claim \ref{gaussian_properties}(iv) to get
 
 We next show that, in expectation, a large number of variable constraints is satisfied.
 \begin{Claim} \label{expt_distance}
-$\mathbb{E}[\norm{X_T}^2 \leq n]$
+$\E[\norm{X_T}^2 \leq n]$
 \end{Claim}
 \begin{Claim} \label{variable_constraint_bound}
-$\mathbb{E}[\abs{\Cvar_T}] \geq 0.68n$
+$\E[\abs{\Cvar_T}] \geq 0.68n$
 \end{Claim}
 \begin{proof}[Proof sketch]
 If $\E[\abs{\Cvar_T}] \ge 0.68n$, then we are done.
@@ -118,7 +118,7 @@ which cannot happen by Claim \ref{expt_distance}.
 
 \begin{proof}[Proof of Lemma \ref{pcl}]
 \begin{align*}
-  \mathbb{E}[\abs{\Cvar_T}]
+\E[\abs{\Cvar_T}]
 &\leq n\Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right] + \dfrac{n}{2}\paren{1- \Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]}\\
 &\leq \dfrac{n}{2}\Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]  + \dfrac{n}{2}
 \end{align*}
