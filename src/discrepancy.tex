@@ -128,14 +128,29 @@ Using Claim \ref{variable_constraint_bound}, we get that $\Pr\left[\abs{\Cvar_T}
 \begin{theorem}
 For a set system $\paren{V,\mathcal{S}}$ there exists a polynomial time randomized algorithm running in time $O((m+n)^5)$ that computes a coloring $\chi$ such that disc$\paren{\mathcal{S}} < K\sqrt{n\log_2(m/n)}$ for a constant $K$.
 \end{theorem}
-\begin{proof}
-Let $\delta = 1/n^2$ and $c_j = \alpha(m,n) = 4 \sqrt{\log(16m/n)}$ (to satisfy conditions for Lemma \ref{pcl}) and set $x_0 =0^n$ and apply Lemma \ref{pcl} to obtain a vector $x_1 \in [-1,1]^n$ which satisfies
-$\abs{\inprod{v_i,x_1}} \leq 4\sqrt{n}\sqrt{\log(16m/n)}$ and $\abs{\set{i: \abs{x_i} \geq 1 - \delta}} \geq n/2$ with probability 0.1 (can be boosted).\par
-The variables which satisfy variable constraint are fixed and the corresponding columns are removed from the incidence matrix of $(V,\mathcal{S})$ to obtain a new set of vectors restricted to the remaining variables ($I_t$) as ${v_i}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_t}}$ and start the whole procedure again with ${x_1}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_1}}$.
-We need to repeat the procedure for $2\log n$ times so that $\abs{x_i} \geq 1- \delta, \forall i \in [n]$ and $\abs{v_j,x} < K\sqrt{n\log(m/n)}, \forall j \in [m]$.
+\begin{proof}[Proof sketch]
+Let $\delta = 1/n$ and $c_j = \alpha(m,n) = 4 \sqrt{\log(16m/n)}$.
+Set $x_0 =0^n$ and apply Lemma \ref{pcl} to obtain a vector $x_1 \in [-1,1]^n$ which satisfies
+$\abs{\inprod{v_i,x_1}} \leq 4\sqrt{n}\sqrt{\log(16m/n)}$
+and $\abs{\set{i: \abs{x_i} \geq 1 - \delta}} \geq n/2$ with probability 0.1 (can be boosted).
 
-To get a proper coloring we round $x$ as $\chi(i) = \sign(x_i) $,
-\[ \inprod{v_j,\chi} = \inprod{v_j,x} \pm \delta n \leq K\sqrt{n\log(m/n)} + 1/n \leq (K+1)\sqrt{n\log(m/n)} \]
+The variables that satisfy $\abs{x_i} \ge 1-\delta$ are fixed
+and the corresponding columns are removed from the incidence matrix of $(V,\mathcal{S})$
+to obtain a new set of vectors restricted to the remaining variables
+($I_t$) as ${v_j}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_t}}$.
+Now recursively apply this algorithm with ${x_1}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_1}}$
+in place of $x_0$ and ${v_j}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_t}}$ in place of $v_j$.
+Since the number of variables get halved each time,
+we need to repeat the procedure at most $\log_2 n$ times.
+It can be proven that we finally get
+$\abs{x_i} \geq 1 - \delta, \forall i \in [n]$ and
+$\abs{\inprod{v_j,x}} < K\sqrt{n\log(16m/n)}, \forall j \in [m]$ for some constant $K$
+(proof can be found in section 6 of \cite{12lovettmeka}).
 
-By choosing $\delta = 1/(8 \log m)$ and doing randomized rounding on the fractional coloring as in \cite{12lovettmeka} instead of this deterministic rounding, the run time can be reduced to $O(m+n)^3$
+To get a proper coloring, we round $x$ as $\chi(i) = \sign(x_i)$,
+\[ \abs{\inprod{v_j,\chi}} \le \abs{\inprod{v_j,x}} + \delta n
+\leq K\sqrt{n\log(16m/n)} + 1 \leq (K+1)\sqrt{n\log(16m/n)} \]
+
+By choosing $\delta = 1/(8 \log m)$ and doing randomized rounding on the fractional coloring as in \cite{12lovettmeka} instead of this deterministic rounding, the run time can be reduced to
+$\widetilde{O}((m+n)^3)$.
 \end{proof}
