@@ -26,9 +26,9 @@ We have that,\\
 (i) For all $u \in \mathbb{R}^n, \inprod{G,u} \sim \mathcal{N}(0,{\sigma}^2)$ where ${\sigma}^2 \leq \norm{u}^2$\\
 (ii) Let $\inprod{G,e_i} \sim \mathcal{N}(0,{\sigma_i}^2)$.
 Then $\sum_{i=1}^{n}{\sigma_i}^2 = \dim(V)$\\
-(iii) For $G \sim \mathcal{N}(0,1), \lambda >0, Pr\left[\abs{G}>\lambda\right] \leq 2e^{-{\lambda}^2/2} $\\
+(iii) For $G \sim \mathcal{N}(0,1), \lambda >0, \Pr\left[\abs{G}>\lambda\right] \leq 2e^{-{\lambda}^2/2} $\\
 (iv) Let $\set{X_i}_{i=1}^{T}$ and $\set{Y_i}_{i=1}^{T}$ be a set of random variables such that $Y_i$ is a function of $X_i$. If $Y_i|\paren{X_1 = x_1,X_2=x_2,\hdots,X_{i-1}=x_{i-1}}$ is a Gaussian with 0 mean and variance at most 1, for all $1 \leq i \leq T,x_1,\hdots,x_{i-1}\in \mathbb{R}$ and for $\lambda > 0$, then
-\[ Pr\left[\abs{Y_1 + \hdots + Y_T} \geq \lambda\sqrt{T}\right] \leq 2e^{-{\lambda}^2/2} \]
+\[ \Pr\left[\abs{Y_1 + \hdots + Y_T} \geq \lambda\sqrt{T}\right] \leq 2e^{-{\lambda}^2/2} \]
 \end{Claim}
 
 The algorithm rests on a Partial Coloring Lemma \ref{pcl}. Partial Coloring Method was developed by Beck \cite{Beck1981} by relaxing the discrepancy vector to $\set{-1,0,+1}$. Here it is further relaxed to $\left[-1,+1\right]$.
@@ -75,18 +75,18 @@ Next we show that on an average, only a few discrepancy constraints are almost s
 $\mathbb{E}\left[\abs{\Cdisc_T} < n/8 \right]$
 \end{Claim}
 \begin{proof}
-Let $\delta = 0.1c_j$, $Pr[j \in \Cdisc_T] = Pr\left[ \abs{Y_1+\hdots+Y_T} > c_j - \delta = 0.9c_j \right]$.
+Let $\delta = 0.1c_j$, $\Pr[j \in \Cdisc_T] = \Pr\left[ \abs{Y_1+\hdots+Y_T} > c_j - \delta = 0.9c_j \right]$.
 We define $Y_t = \gamma\inprod{\frac{v_j}{\norm{v_j}},U_t}$ to be a Gaussian with mean 0 and variance at most ${\gamma}^2$ and as a function of $U_t$.
 Now $Y_t|(U_1,\hdots,U_{t-1})$ is a Gaussian but with variance ${\lambda}^2$, so we normalize to apply martingale bound in Claim \ref{gaussian_properties},  with $\lambda = \frac{0.9c_j}{\gamma \sqrt{T}}$ and hence,
-\[Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{-\frac{0.81{c_j}^2}{{\gamma}^2T}}\]
+\[\Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{-\frac{0.81{c_j}^2}{{\gamma}^2T}}\]
 and for $T = \frac{16}{0.81{\gamma}^2}$, we get that
-\[Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}\]
+\[\Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}\]
 Let $Z_j$ be indicator for $j\Th$ discrepancy constraint being satisfied,
 \begin{align*}
     \mathbb{E}[\abs{\Cdisc_T}]
     &= \mathbb{E}[Z_1+\hdots+Z_m]
     = \mathbb{E}[Z_1] + \hdots + \mathbb{E}[Z_m]\\
-    &= Pr[1 \in \Cdisc_T] + \hdots + Pr[m \in \Cdisc_T]
+    &= \Pr[1 \in \Cdisc_T] + \hdots + \Pr[m \in \Cdisc_T]
     \leq 2\sum_{j=1}^{m}{e^{{-c_j}^2/16}} \leq 2.\dfrac{n}{16} = \dfrac{n}{8}
 \end{align*}
 \end{proof}
@@ -111,10 +111,10 @@ which cannot happen by Claim \ref{expt_distance}.
 \begin{proof}[Proof of Lemma \ref{pcl}]
 \begin{align*}
   \mathbb{E}[\abs{\Cvar_T}]
-&\leq nPr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right] + \dfrac{n}{2}\paren{1- Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]}\\
-&\leq \dfrac{n}{2}Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]  + \dfrac{n}{2}
+&\leq n\Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right] + \dfrac{n}{2}\paren{1- \Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]}\\
+&\leq \dfrac{n}{2}\Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]  + \dfrac{n}{2}
 \end{align*}
-Using Claim \ref{variable_constraint_bound}, we get that $Pr\left[\abs{\Cvar_T} > \dfrac{n}{2}\right] > 0.36 (> 0.1)$
+Using Claim \ref{variable_constraint_bound}, we get that $\Pr\left[\abs{\Cvar_T} > \dfrac{n}{2}\right] > 0.36 (> 0.1)$
 \end{proof}
 
 \begin{theorem}
