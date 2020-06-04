@@ -27,7 +27,11 @@ We have that,\\
 (ii) Let $\inprod{G,e_i} \sim \mathcal{N}(0,{\sigma_i}^2)$.
 Then $\sum_{i=1}^{n}{\sigma_i}^2 = \dim(V)$\\
 (iii) For $G \sim \mathcal{N}(0,1), \lambda >0, \Pr\left[\abs{G}>\lambda\right] \leq 2e^{-{\lambda}^2/2} $\\
-(iv) Let $\set{X_i}_{i=1}^{T}$ and $\set{Y_i}_{i=1}^{T}$ be a set of random variables such that $Y_i$ is a function of $X_i$. If $Y_i|\paren{X_1 = x_1,X_2=x_2,\hdots,X_{i-1}=x_{i-1}}$ is a Gaussian with 0 mean and variance at most 1, for all $1 \leq i \leq T,x_1,\hdots,x_{i-1}\in \mathbb{R}$ and for $\lambda > 0$, then
+(iv) Let $\set{X_i}_{i=1}^{T}$ and $\set{Y_i}_{i=1}^{T}$ be a set of random variables
+such that $Y_i$ is a function of $X_i$.
+If for all $1 \leq i \leq T,x_1,\hdots,x_{i-1}\in \mathbb{R}$ and for $\lambda > 0$,
+$Y_i | \paren{X_1 = x_1, X_2=x_2, \hdots, X_{i-1}=x_{i-1}}$
+is a Gaussian with 0 mean and variance at most 1, then
 \[ \Pr\left[\abs{Y_1 + \hdots + Y_T} \geq \lambda\sqrt{T}\right] \leq 2e^{-{\lambda}^2/2} \]
 \end{Claim}
 
