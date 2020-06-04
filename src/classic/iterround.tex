@@ -21,7 +21,7 @@ $\iterround$ must follows these 3 rules:
 \end{itemize}
 Therefore, in at most $n$ iterations, we obtain an integral solution $X$.
 
-Ideally, we'll want $c^Tx^{(i)}$ to decrease in each iteration,
+Ideally, we'll want $c^Tx^{(i)}$ to not increase in each iteration,
 i.e. design $\iterround$ so that it satisfies this property: $c^T\iterround(x) \le c^Tx$.
 It may be difficult to do so, and it is impossible if the integrality gap is not 1.
 To make it easier to design such an $\iterround$,

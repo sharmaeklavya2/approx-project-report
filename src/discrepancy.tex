@@ -58,26 +58,29 @@ $\Cvar_t \subseteq \Cvar_{t+1}$, $\Cdisc_t \subseteq \Cdisc_{t+1}$ and $\dim(\ma
 
 Next we claim that this edge walk remains inside $\mathcal{P}$ with high probability.
 \begin{Claim}
-For a small step size $\gamma \leq \delta/\sqrt{C\log(mn/\gamma)}$ and large constant $C$, the probability that the walk never leaves $\mathcal{P}$ $\paren{X_0,\hdots,X_T \in \mathcal{P}}$ is at least $1 - 1/(mn)^{C-2}$.
+For a small step size $\gamma \leq \delta/\sqrt{C\log(mn/\gamma)}$ and large constant $C$, the probability that the walk never leaves $\mathcal{P}$ $\paren{X_0,\hdots,X_T \in \mathcal{P}}$ is at least $1 - 1/(mn)^{\paren{\frac{C}{2}-1}}$.
 \end{Claim}
 \begin{proof}
 Let $E_t$ be the event that the walk leaves $\mathcal{P}$ for the first time.
 For this to happen, one of the constraints has to be violated, say $(X_t)_i>1$.
 This implies that $(X_{t-1})_i \leq 1 - \delta$ as otherwise $i \in \Cvar_t$ and $(U_t)_i=0$ and $(X_{t})_i=(X_{t-1})_i$.
 The above holds if $\abs{(U_t)_i} \geq \delta/\gamma$ which implies that $\abs{\inprod{U_t,w}} \geq \delta/\gamma$ for some $w \in \mathbb{R}^n$.
-Since $U_t \sim \mathcal{N}(\mathcal{V}_t)$, by Claim \ref{gaussian_properties}, $\inprod{U_t,w}$ is a standard Gaussian. Invoking the tail bound in Claim \ref{gaussian_properties} gives us the desired result.
+Since $U_t \sim \mathcal{N}(\mathcal{V}_t)$, by Claim \ref{gaussian_properties}, $\inprod{U_t,w}$ is a standard Gaussian.
+Invoking the tail bound in Claim \ref{gaussian_properties} gives us the desired result.
 \end{proof}
 
-Next we show that on an average, only a few discrepancy constraints are satisfied.
+Next we show that on an average, only a few discrepancy constraints are almost satisfied.
 \begin{Claim}
 \label{thm:less-disc-constraints}
 $\mathbb{E}\left[\abs{\Cdisc_T} < n/8 \right]$
 \end{Claim}
 \begin{proof}
-We define $Y_t = c_j\inprod{\frac{v_j}{\norm{v_j}},U_t}$. $Y_t$ is a Gaussian with mean 0 and variance at most $\norm{u}^2 = {c_j}^2$ and a function of $U_t$.
-$Y_t|(U_1,\hdots,U_{t-1})$ is a Gaussian and using the martingale bound in Claim \ref{gaussian_properties},  with $\lambda = 0.9c_j$ we can show that,
+Let $\delta = 0.1c_j$, $Pr[j \in \Cdisc_T] = Pr\left[ \abs{Y_1+\hdots+Y_T} > c_j - \delta = 0.9c_j \right]$.
+We define $Y_t = \gamma\inprod{\frac{v_j}{\norm{v_j}},U_t}$ to be a Gaussian with mean 0 and variance at most ${\gamma}^2$ and as a function of $U_t$.
+Now $Y_t|(U_1,\hdots,U_{t-1})$ is a Gaussian but with variance ${\lambda}^2$, so we normalize to apply martingale bound in Claim \ref{gaussian_properties},  with $\lambda = \frac{0.9c_j}{\gamma \sqrt{T}}$ and hence,
+\[Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{-\frac{0.81{c_j}^2}{{\gamma}^2T}}\]
+and for $T = \frac{16}{0.81{\gamma}^2}$, we get that
 \[Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}\]
-For our choice of $\delta = 0.1$, $Pr[j \in \Cdisc_T] = Pr\left[ \abs{Y_1+\hdots+Y_T} > 0.9c_j \right] \leq 2e^{{-c_j}^2/16}$
 Let $Z_j$ be indicator for $j\Th$ discrepancy constraint being satisfied,
 \begin{align*}
     \mathbb{E}[\abs{\Cdisc_T}]
@@ -87,17 +90,16 @@ Let $Z_j$ be indicator for $j\Th$ discrepancy constraint being satisfied,
     \leq 2\sum_{j=1}^{m}{e^{{-c_j}^2/16}} \leq 2.\dfrac{n}{16} = \dfrac{n}{8}
 \end{align*}
 \end{proof}
-
 We next show that, in expectation, a large number of variable constraints is satisfied.
 \begin{Claim} \label{expt_distance}
 $\mathbb{E}[\norm{X_T}^2 \leq n]$
 \end{Claim}
 \begin{Claim} \label{variable_constraint_bound}
-$\mathbb{E}[\abs{\Cvar_T}] \geq 0.56n$
+$\mathbb{E}[\abs{\Cvar_T}] \geq 0.68n$
 \end{Claim}
 \begin{proof}[Proof sketch]
-If $\E[\abs{\Cvar_T}] \ge 0.56n$, then we are done.
-If $\E[\abs{\Cvar_T}] < 0.56n$, then by Claim \ref{thm:less-disc-constraints},
+If $\E[\abs{\Cvar_T}] \ge 0.68n$, then we are done.
+If $\E[\abs{\Cvar_T}] < 0.68n$, then by Claim \ref{thm:less-disc-constraints},
 $\E[\dim(\mathcal{V}_t)]$ is sufficiently large for all $t$.
 
 By Claim \ref{gaussian_properties}(ii), for all $t$,
@@ -112,18 +114,20 @@ which cannot happen by Claim \ref{expt_distance}.
 &\leq nPr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right] + \dfrac{n}{2}\paren{1- Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]}\\
 &\leq \dfrac{n}{2}Pr\left[\abs{\Cvar_T} \geq \dfrac{n}{2}\right]  + \dfrac{n}{2}
 \end{align*}
-Using Claim \ref{variable_constraint_bound}, we get that $Pr\left[\abs{\Cvar_T} > \dfrac{n}{2}\right] > 0.12 (> 0.1)$
+Using Claim \ref{variable_constraint_bound}, we get that $Pr\left[\abs{\Cvar_T} > \dfrac{n}{2}\right] > 0.36 (> 0.1)$
 \end{proof}
 
 \begin{theorem}
-For a set system $\paren{V,\mathcal{S}}$ there exists a polynomial time randomized algorithm running in time $O((m+n)^3)$ that computes a coloring $\chi$ such that disc$\paren{\mathcal{S}} < K\sqrt{n\log_2(m/n)}$ for a constant $K$.
+For a set system $\paren{V,\mathcal{S}}$ there exists a polynomial time randomized algorithm running in time $O((m+n)^5)$ that computes a coloring $\chi$ such that disc$\paren{\mathcal{S}} < K\sqrt{n\log_2(m/n)}$ for a constant $K$.
 \end{theorem}
 \begin{proof}
-Let $\delta = 1/n^2$ and $c_j = \alpha(m,n) = 8 \sqrt{\log(m/n)}$ (to satisfy conditions for Lemma \ref{pcl}) and set $x_0 =0^n$ and apply Lemma \ref{pcl} to obtain a vector $x_1 \in [-1,1]^n$ which satisfies
-$\abs{\inprod{v_i,x_1}} \leq 8\sqrt{n}\sqrt{\log(m/n)}$ and $\abs{\set{i: \abs{x_i} \geq 1 - \delta}} \geq n/2$ with probability 0.1 (can be boosted).\par
-The variables which satisfy variable constraint are fixed and the corresponding columns is removed from the incidence matrix of $(V,\mathcal{S})$ to obtain a new set of vectors restricted to the remaining variables ($I_t$) as ${v_i}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_t}}$ and start the whole procedure again with ${x_1}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_1}}$.
+Let $\delta = 1/n^2$ and $c_j = \alpha(m,n) = 4 \sqrt{\log(16m/n)}$ (to satisfy conditions for Lemma \ref{pcl}) and set $x_0 =0^n$ and apply Lemma \ref{pcl} to obtain a vector $x_1 \in [-1,1]^n$ which satisfies
+$\abs{\inprod{v_i,x_1}} \leq 4\sqrt{n}\sqrt{\log(16m/n)}$ and $\abs{\set{i: \abs{x_i} \geq 1 - \delta}} \geq n/2$ with probability 0.1 (can be boosted).\par
+The variables which satisfy variable constraint are fixed and the corresponding columns are removed from the incidence matrix of $(V,\mathcal{S})$ to obtain a new set of vectors restricted to the remaining variables ($I_t$) as ${v_i}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_t}}$ and start the whole procedure again with ${x_1}_{\mkern 1mu \vrule height 1ex\mkern2mu {I_1}}$.
 We need to repeat the procedure for $2\log n$ times so that $\abs{x_i} \geq 1- \delta, \forall i \in [n]$ and $\abs{v_j,x} < K\sqrt{n\log(m/n)}, \forall j \in [m]$.
 
 To get a proper coloring we round $x$ as $\chi(i) = \sign(x_i) $,
 \[ \inprod{v_j,\chi} = \inprod{v_j,x} \pm \delta n \leq K\sqrt{n\log(m/n)} + 1/n \leq (K+1)\sqrt{n\log(m/n)} \]
+
+By choosing $\delta = 1/(8 \log m)$ and doing randomized rounding on the fractional coloring as in \cite{12lovettmeka} instead of this deterministic rounding, the run time can be reduced to $O(m+n)^3$
 \end{proof}
