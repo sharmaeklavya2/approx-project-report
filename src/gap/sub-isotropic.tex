@@ -15,7 +15,7 @@ For machine $i$, define the excess $e_i$ as
 Machine $i$ will get the maximum load that it can possibly get if
 all fractional variables get rounded to 1. So, the maximum increase in $i$'s load is
 \[ \sum_{j \in \delta(i) \cap R_k} p_{i,j} (1-x_{i,j}^{(k)}) \leq q_i e_i \]
-Denote machines with high excess ($e_i > q_i/(1-2\delta)$) by $M_k$ and let $m_k = \abs{M_k}$.
+Denote machines with high excess ($e_i > 1/(1-2\delta)$) by $M_k$ and let $m_k = \abs{M_k}$.
 Constraints corresponding to $M_k \cup R_k$ form our $W^{(k)}$. We first show that,
 \begin{lemma}
 $\dim(W^{(k)}) < (1-\delta)n_k$
