@@ -22,7 +22,7 @@ the variables correspond to different jobs, so they are independent.
 Therefore, we can use a variant of Bernstein's inequality
 (theorem \ref{thm:lin-bound-bern-conc}) to prove concentration.
 \[ \Pr[\textrm{load on machine } i \ge (1+\delta)T_i]
-\le \exp\left( -\frac{1}{2} \frac{q_i}{T_i} \frac{1}{1+\frac{q_i}{3T_i}} \right) \]
+\le \exp\left( -\frac{1}{2} \frac{T_i}{q_i} \frac{\delta^2}{1+\delta/3} \right) \]
 When $q_i$ can be as high as $T_i$, we get
 \[ \Pr[\textrm{load on machine } i \ge 2T_i]
 \le e^{-\frac{3}{8}} \le 0.6873 \]
